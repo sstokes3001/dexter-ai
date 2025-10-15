@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dexter AI Bridge: Strategic Plan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals & Subtle Earth Tones -->
+    <!-- Application Structure Plan: The SPA is organized into four logical, scrollable sections accessible via a sticky top navigation: an introduction, a project tiers explorer, a student development pathway, and a partnership framework. This structure mirrors the strategic plan's flow, guiding the user from the "what" (project types) to the "who" (students) and finally the "how" (partnerships). Key interactions include toggling between project tiers with buttons, exploring a visual process flow for student skills, and using an accordion for the detailed partnership info. This design was chosen to break down a dense document into interactive, digestible modules, making it easy for different stakeholders (businesses, educators, students) to find the information most relevant to them. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Tier 1 & Tier 2 Projects -> Goal: Organize/Inform -> Viz: Interactive card grids toggled by buttons -> Interaction: User clicks a tier button to display the relevant set of project cards, hiding the other. -> Justification: Prevents a long, overwhelming list and allows users to focus on a specific complexity level. -> Method: HTML/Tailwind cards, Vanilla JS for visibility toggle.
+        - Report Info: Student Skill Progression -> Goal: Show Change/Process -> Viz: HTML/CSS horizontal process flow diagram -> Interaction: Hovering on a stage could reveal more detail (not implemented to maintain simplicity, but structure allows it). -> Justification: A visual flow is more intuitive for understanding a journey than a text list. -> Method: HTML/Tailwind divs and borders.
+        - Report Info: Project Type Distribution (10 Tier 1, 5 Tier 2) -> Goal: Compare/Proportions -> Viz: Donut Chart -> Interaction: Hovering over a slice shows the exact count and percentage. -> Justification: Provides a quick, powerful visual summary of the program's focus on accessible entry-level projects. -> Method: Chart.js/Canvas.
+        - Report Info: Partnership Model & Legal Details -> Goal: Organize/Inform -> Viz: Accordion component -> Interaction: User clicks a heading to expand its content, collapsing others. -> Justification: Condenses detailed procedural text into manageable sections, avoiding a "wall of text" and improving readability. -> Method: HTML/Tailwind, Vanilla JS for expand/collapse logic.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #3D405B;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #81B29A;
+            border-bottom-color: #81B29A;
+        }
+        .tier-button {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .tier-button.active {
+            background-color: #81B29A;
+            color: white;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .pathway-step {
+            position: relative;
+            z-index: 1;
+        }
+        .pathway-step::after {
+            content: '→';
+            position: absolute;
+            right: -2.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: #E07A5F;
+        }
+        .pathway-step:last-child::after {
+            content: '';
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #81B29A;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .gemini-feature-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-[#3D405B]">Dexter <span class="text-[#E07A5F]">AI</span> Bridge</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#projects" class="nav-link font-medium pb-1">Project Tiers</a>
+                <a href="#pathway" class="nav-link font-medium pb-1">Student Pathway</a>
+                <a href="#partnership" class="nav-link font-medium pb-1">Partnership Framework</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <!-- Introduction Section -->
+        <section id="intro" class="text-center mb-20">
+            <h2 class="text-4xl font-bold mb-4">A Strategic Blueprint for Community Innovation</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-700">
+                This document outlines the strategic plan for the Dexter AI Bridge initiative. Our mission is to connect Dexter High School's tech students with local organizations to solve real-world problems using AI. This interactive plan details the types of projects, the student development journey, and the framework for successful community-business partnerships.
+            </p>
+        </section>
+
+        <!-- Problem Identification Section -->
+        <section id="projects" class="mb-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">AI Project Menu for Local Businesses</h2>
+                <p class="max-w-2xl mx-auto text-gray-600">This “menu” of AI solution ideas is categorized by difficulty. "Starter" projects leverage existing tools for quick wins, while "Advanced" projects address deeper challenges and deliver high-impact results, helping partners solve common pain points with practical AI solutions.</p>
+            </div>
+
+            <div class="flex justify-center space-x-4 mb-8">
+                <button id="starterBtn" class="tier-button active text-lg font-semibold py-2 px-6 rounded-full bg-gray-200 text-gray-800">“Starter” Projects</button>
+                <button id="advancedBtn" class="tier-button text-lg font-semibold py-2 px-6 rounded-full bg-gray-200 text-gray-800">“Advanced” Projects</button>
+            </div>
+
+            <!-- Starter Projects -->
+            <div id="starterContent">
+                <div id="starter-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Cards will be injected by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Advanced Projects -->
+            <div id="advancedContent" class="hidden">
+                <div id="advanced-grid" class="grid md:grid-cols-2 gap-8">
+                    <!-- Cards will be injected by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Student Engagement & Skill Development Section -->
+        <section id="pathway" class="mb-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">Student Engagement & Skill Pathway</h2>
+                <p class="max-w-2xl mx-auto text-gray-600">Our program is designed to build both technical and professional skills. Students progress through distinct roles, gaining experience from initial client consultation to final project delivery, preparing them for future careers.</p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row justify-around items-center text-center space-y-8 md:space-y-0 md:space-x-8 p-8 bg-white rounded-2xl shadow-md mb-12">
+                <div class="pathway-step flex-1">
+                    <div class="text-5xl mb-2">🧑‍💼</div>
+                    <h3 class="text-xl font-bold text-[#3D405B]">1. Consultant & Analyst</h3>
+                    <p class="text-sm text-gray-600">Listen to client needs, identify problems, and brainstorm potential AI solutions.</p>
+                </div>
+                <div class="pathway-step flex-1">
+                    <div class="text-5xl mb-2">🎨</div>
+                    <h3 class="text-xl font-bold text-[#3D405B]">2. Designer & Proposer</h3>
+                    <p class="text-sm text-gray-600">Outline project scope, define deliverables, and create a formal project proposal.</p>
+                </div>
+                <div class="pathway-step flex-1">
+                     <div class="text-5xl mb-2">🛠️</div>
+                    <h3 class="text-xl font-bold text-[#3D405B]">3. Developer & Implementer</h3>
+                    <p class="text-sm text-gray-600">Build, test, and deploy the AI solution using appropriate tools and platforms.</p>
+                </div>
+                <div class="pathway-step flex-1">
+                     <div class="text-5xl mb-2">📈</div>
+                    <h3 class="text-xl font-bold text-[#3D405B]">4. Presenter & Trainer</h3>
+                    <p class="text-sm text-gray-600">Deliver the final product, train the client on its use, and present project outcomes.</p>
+                </div>
+            </div>
+
+            <div class="text-center mt-16">
+                 <h3 class="text-2xl font-bold mb-2">Project Complexity Distribution</h3>
+                <p class="max-w-2xl mx-auto text-gray-600 mb-8">The program focuses heavily on accessible "Starter" projects to provide a solid foundation for all participating students, with opportunities to advance to more complex "Advanced" challenges.</p>
+                <div class="chart-container">
+                    <canvas id="projectDistributionChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Business Partnership & Legal Framework Section -->
+        <section id="partnership" class="mb-12">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">Partnership & Legal Framework</h2>
+                <p class="max-w-2xl mx-auto text-gray-600">We provide a clear and simple framework for local organizations to engage with our student teams. The following sections outline the engagement process, proposal structure, and essential legal and ethical guidelines.</p>
+            </div>
+            
+            <div id="accordion" class="max-w-4xl mx-auto space-y-4">
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-gray-100 mt-20">
+        <div class="container mx-auto px-6 py-8 text-center text-gray-600">
+            <p class="font-bold text-lg text-[#3D405B]">Dexter AI Bridge Initiative</p>
+            <p>Fostering the next generation of innovators in Dexter, Michigan.</p>
+        </div>
+    </footer>
+
+    <!-- Proposal Drafter Modal -->
+    <div id="proposalModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 class="text-xl font-bold text-[#3D405B]">✨ AI Proposal Drafter</h3>
+                <button id="closeModalBtn" class="text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div class="p-6 space-y-4 overflow-y-auto">
+                <p class="text-gray-600">Provide a title and a brief problem description to get started. The AI will generate a draft based on our standard proposal outline.</p>
+                <div>
+                    <label for="proposalTitle" class="block font-semibold mb-1">Project Title</label>
+                    <input type="text" id="proposalTitle" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="e.g., AI-Powered Volunteer Scheduling">
+                </div>
+                 <div>
+                    <label for="proposalProblem" class="block font-semibold mb-1">Problem Description</label>
+                    <textarea id="proposalProblem" class="w-full p-2 border border-gray-300 rounded-lg" rows="3" placeholder="e.g., Our non-profit struggles to manually coordinate schedules for over 50 volunteers, leading to confusion and missed shifts."></textarea>
+                </div>
+                <button id="draftProposalBtn" class="w-full bg-[#81B29A] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#6a9a81] transition-colors flex items-center justify-center space-x-2">
+                    <span>Draft Proposal</span>
+                    <div id="proposalLoader" class="loader hidden"></div>
+                </button>
+                <div id="proposalResult" class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 hidden whitespace-pre-wrap font-mono text-sm"></div>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const starterData = [
+        { title: "Customer Service Chatbot (FAQ Bot)", problem: "Repetitive customer questions.", solution: "Implement a basic chatbot on the website or Facebook to answer common inquiries (hours, pricing, etc.) 24/7. For complex queries, it can pass the customer to a human." },
+        { title: "Automated Social Media Scheduling", problem: "Inconsistent or time-consuming social media management.", solution: "Use an AI-driven tool to schedule posts at optimal times by analyzing when the audience is most active, ensuring a consistent social media presence without manual effort." },
+        { title: "AI Writing Assistant for Marketing", problem: "Creating engaging content is time-consuming.", solution: "Deploy an AI content helper (e.g., Jasper) to draft or improve marketing content like blog posts and product descriptions, accelerating content creation." },
+        { title: "Content Summarization Tool", problem: "Information overload, long texts to digest.", solution: "Build a tool that uses AI to summarize long documents, reports, or articles into key bullet points, saving time by highlighting what matters." },
+        { title: "Meeting Transcription & Notes Assistant", problem: "Taking meeting minutes and distributing notes.", solution: "Set up an AI service (e.g., Otter.ai) to record and transcribe meetings, providing a written record of discussions and even highlighting action items." },
+        { title: "Invoice and Expense Automation", problem: "Manual financial record-keeping.", solution: "Use an AI tool to scan receipts or invoices (using OCR) and automatically input the data into a spreadsheet or accounting system, reducing manual data entry." },
+        { title: "Appointment Scheduling Assistant", problem: "Scheduling meetings with clients or vendors.", solution: "Create a simple AI assistant to handle appointment bookings via email or a form, avoiding back-and-forth emailing and double bookings." },
+        { title: "AI Language Translation for Marketing", problem: "Language barrier with some customer groups.", solution: "Leverage AI translation tools (like Google Translate’s API) to convert key content into other languages, helping the business reach a broader local audience." },
+        { title: "AI Email Assistant", problem: "Email overload and slow response time.", solution: "Set up an AI tool to manage the inbox by suggesting replies, sorting emails by priority, and drafting routine responses to common inquiries." },
+        { title: "AI-Generated Marketing Graphics", problem: "Lack of design resources for marketing materials.", solution: "Use generative AI (like DALL·E or Canva's AI) to produce high-quality social media visuals, flyers, or product concept images in minutes." }
+    ];
+
+    const advancedData = [
+        { title: "Inventory Demand Prediction", problem: "Managing inventory and avoiding lost sales or waste.", solution: "Develop a machine learning model using historical sales data to forecast product demand and optimal inventory levels, helping to avoid overstocking or stockouts." },
+        { title: "Custom Data Analysis & Insights", problem: "Making data-driven decisions; hidden trends in data.", solution: "Analyze proprietary business data (sales logs, customer data) to find patterns in purchasing behavior or identify inefficiencies, presented in a report or dashboard." },
+        { title: "Sentiment Analysis of Customer Feedback", problem: "Manually digesting lots of customer feedback.", solution: "Apply NLP to analyze text from reviews or surveys to determine overall customer sentiment and pinpoint frequent compliments or complaints for actionable insights." },
+        { title: "Product Recommendation System", problem: "Increasing sales per customer through personalization.", solution: "Build a basic recommendation engine using purchase history to suggest related products or upsells (“Customers who bought X also like Y”), enhancing sales." },
+        { title: "AI Visual Inspection or Monitoring", problem: "Monitoring quality or operations manually.", solution: "Develop a computer vision solution to inspect product images for defects, count foot traffic from camera footage, or monitor when an item on a shelf is running low." }
+    ];
+
+    const accordionData = [
+        { 
+            title: "Step-by-Step Engagement Model", 
+            content: `
+                <p class="mb-4 text-gray-700">To ensure each project is delivered successfully, student teams will follow a structured 5-step consulting process when engaging with a local business. This workflow covers from the first contact to final delivery:</p>
+                <ol class="list-decimal list-inside space-y-4 text-gray-700">
+                    <li>
+                        <strong>Initial Meeting & Needs Assessment:</strong> The student team meets with the business owner to understand challenges and goals in a discovery session. Students use a “Project Scoping Questionnaire” to identify pain points and brainstorm suitable AI solutions.
+                        <p class="mt-2 pl-4 text-sm"><strong>Output:</strong> A clear understanding of the problem, available resources, and the business’s expectations, confirmed in writing.</p>
+                    </li>
+                    <li>
+                        <strong>Project Scoping & Agreement:</strong> The team defines the project scope, timeline, and deliverables. A short Project Agreement is drafted and reviewed with the business for approval. Both parties sign off to ensure a clear roadmap.
+                        <p class="mt-2 pl-4 text-sm"><strong>Output:</strong> A finalized project plan/contract that sets expectations for what will be done, by whom, and by when.</p>
+                    </li>
+                    <li>
+                        <strong>Development & Implementation:</strong> The team executes the project, providing regular check-ins (e.g., weekly update emails) to report progress. The team’s teacher or mentor oversees the work.
+                        <p class="mt-2 pl-4 text-sm"><strong>Output:</strong> A working draft or prototype of the solution and interim progress reports.</p>
+                    </li>
+                    <li>
+                        <strong>Testing & Feedback:</strong> The team tests the prototype and involves the business for feedback to ensure the solution meets their needs. Adjustments are made based on this iterative feedback loop.
+                        <p class="mt-2 pl-4 text-sm"><strong>Output:</strong> A refined final version of the solution, validated by the business through at least one round of feedback.</p>
+                    </li>
+                    <li>
+                        <strong>Project Delivery & Wrap-Up:</strong> The team delivers the finished product, provides necessary training and documentation (e.g., a simple user guide), and may ask for a testimonial. The engagement is formally closed out upon fulfillment of the project agreement.
+                        <p class="mt-2 pl-4 text-sm"><strong>Output:</strong> The business has the deployed AI solution, along with training materials. The project is considered complete.</p>
+                    </li>
+                </ol>
+                <p class="mt-6 text-gray-600 italic">By following these steps, the program ensures professionalism and project success. Students act as “consultants,” and businesses get a clear process similar to working with a small agency.</p>
+            ` 
+        },
+        {
+            title: "Project Scoping Questionnaire",
+            content: `
+                <p class="mb-4 text-gray-700">Before diving into a project, students use this questionnaire to scope out the business’s needs. These 10 key questions guide the initial conversation and ensure the project is well-defined, serving as an interview guide or a preliminary form.</p>
+                <ol class="list-decimal list-inside space-y-4 text-gray-700">
+                    <li>
+                        <strong>Business Challenge:</strong> What is the main challenge or problem in your business that you would like help with? (This identifies the core pain point.)
+                    </li>
+                    <li>
+                        <strong>Manual Tasks:</strong> Which tasks or processes currently take a lot of time or are done manually in your operations? (This looks for opportunities to automate.)
+                    </li>
+                    <li>
+                        <strong>Data Availability:</strong> Do you collect or have access to any data related to this challenge (e.g., sales logs, customer feedback)? (This shapes the potential AI solution.)
+                    </li>
+                    <li>
+                        <strong>Desired Outcome:</strong> What would a successful solution do for you? How would you measure success? (This defines the success criteria for the project.)
+                    </li>
+                    <li>
+                        <strong>Existing Tools:</strong> Are you already using any software or tools to address this? Have you tried any AI solutions before? (This helps understand the current tech stack and past experiences.)
+                    </li>
+                    <li>
+                        <strong>Specific Ideas:</strong> Do you have a particular type of AI solution in mind, or are you open to recommendations? (This gauges expectations and openness to new ideas.)
+                    </li>
+                    <li>
+                        <strong>Constraints or Requirements:</strong> Are there any limitations we should know about (e.g., data privacy, budget, deadlines)? (Understanding constraints early prevents proposing unfeasible solutions.)
+                    </li>
+                    <li>
+                        <strong>Point of Contact:</strong> Who from your team will be our main point of contact, and how involved can they be? (This establishes a clear communication plan.)
+                    </li>
+                    <li>
+                        <strong>Timeline Expectations:</strong> Do you have a specific timeline or deadline in mind for this project? (This helps align the project with business needs.)
+                    </li>
+                    <li>
+                        <strong>Post-Project Use:</strong> Once we deliver the solution, how do you plan to use it day-to-day, and who will be using it? (This ensures user-friendliness and considers training needs.)
+                    </li>
+                </ol>
+            `
+        },
+        { 
+            title: "Sample Student Project Proposal Outline", 
+            content: `
+                <div class="space-y-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <h4 class="font-bold text-lg text-[#3D405B]">Project Title: [Concise and Clear Title]</h4>
+                    <div class="text-gray-700">
+                        <p><strong>1. Executive Summary:</strong> A brief, one-paragraph overview of the entire project.</p>
+                        <p><strong>2. Problem Statement:</strong> A clear description of the challenge the organization is facing.</p>
+                        <p><strong>3. Proposed AI Solution:</strong> A detailed explanation of the AI tool or system to be developed and how it will address the problem.</p>
+                        <p><strong>4. Project Scope & Deliverables:</strong> A bulleted list of what will be created and delivered by the end of the project.</p>
+                        <p><strong>5. Timeline:</strong> A simple timeline with key milestones (e.g., Week 1: Data Collection, Week 2-3: Development, Week 4: Testing & Delivery).</p>
+                        <p><strong>6. Team Members:</strong> A list of the student team members and their roles.</p>
+                        <p><strong>7. Success Metrics:</strong> How we will measure the success of the project (e.g., "reduce time spent on X by 20%").</p>
+                    </div>
+                    <button id="openProposalModalBtn" class="mt-4 bg-[#E07A5F] text-white font-bold py-2 px-4 rounded-lg hover:bg-[#d46a4d] transition-colors">✨ Draft with AI</button>
+                </div>
+            ` 
+        },
+        { 
+            title: "Business, Legal & Ethical Guide", 
+            content: `
+                <div class="space-y-4 text-gray-700">
+                    <p><strong>Simple Contracts:</strong> Project agreements will be straightforward, outlining scope, timeline, and responsibilities. The focus is on clarity and mutual understanding, not complex legal jargon. Students will learn the basics of what makes an agreement binding.</p>
+                    <p><strong>Non-Disclosure Agreement (NDA):</strong> An NDA is a promise to keep the partner's business information confidential. We will use a standard, easy-to-understand template. Students learn the importance of protecting client data and intellectual property.</p>
+                    <p><strong>Ethical AI Considerations:</strong> All projects must adhere to ethical guidelines. Students are taught to consider fairness, bias in data, transparency, and the potential impact of their AI solutions on the community. Projects that involve sensitive personal data will undergo a stricter review.</p>
+                </div>
+            ` 
+        }
+    ];
+
+    const starterGrid = document.getElementById('starter-grid');
+    const advancedGrid = document.getElementById('advanced-grid');
+
+    starterData.forEach(item => {
+        starterGrid.innerHTML += `
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100 h-full flex flex-col">
+                <h3 class="font-bold text-lg mb-2 text-[#3D405B]">${item.title}</h3>
+                <p class="text-sm text-gray-600 mb-2 flex-grow"><strong class="text-gray-800">Pain Point:</strong> ${item.problem}</p>
+                <p class="text-sm text-emerald-700"><strong class="text-emerald-900">AI Solution:</strong> ${item.solution}</p>
+            </div>
+        `;
+    });
+
+    advancedData.forEach(item => {
+        advancedGrid.innerHTML += `
+            <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200 h-full flex flex-col">
+                <h3 class="font-bold text-xl mb-2 text-[#E07A5F]">${item.title}</h3>
+                <p class="text-gray-600 mb-2 flex-grow"><strong class="text-gray-800">Challenge:</strong> ${item.problem}</p>
+                <p class="text-emerald-700"><strong class="text-emerald-900">AI Solution:</strong> ${item.solution}</p>
+            </div>
+        `;
+    });
+
+    const accordionContainer = document.getElementById('accordion');
+    accordionData.forEach((item, index) => {
+        accordionContainer.innerHTML += `
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <button class="accordion-button w-full text-left p-4 font-semibold text-lg text-[#3D405B] flex justify-between items-center" data-index="${index}">
+                    ${item.title}
+                    <span class="transform transition-transform duration-300 ">▼</span>
+                </button>
+                <div class="accordion-content px-4 pb-4">
+                    ${item.content}
+                </div>
+            </div>
+        `;
+    });
+
+    const starterBtn = document.getElementById('starterBtn');
+    const advancedBtn = document.getElementById('advancedBtn');
+    const starterContent = document.getElementById('starterContent');
+    const advancedContent = document.getElementById('advancedContent');
+
+    starterBtn.addEventListener('click', () => {
+        starterContent.classList.remove('hidden');
+        advancedContent.classList.add('hidden');
+        starterBtn.classList.add('active');
+        advancedBtn.classList.remove('active');
+    });
+
+    advancedBtn.addEventListener('click', () => {
+        starterContent.classList.add('hidden');
+        advancedContent.classList.remove('hidden');
+        advancedBtn.classList.add('active');
+        starterBtn.classList.remove('active');
+    });
+    
+    document.querySelectorAll('.accordion-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const content = button.nextElementSibling;
+            const arrow = button.querySelector('span');
+
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                arrow.style.transform = 'rotate(0deg)';
+            } else {
+                document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+                document.querySelectorAll('.accordion-button span').forEach(a => a.style.transform = 'rotate(0deg)');
+                content.style.maxHeight = content.scrollHeight + "px";
+                arrow.style.transform = 'rotate(180deg)';
+            } 
+        });
+    });
+
+    const ctx = document.getElementById('projectDistributionChart').getContext('2d');
+    const projectDistributionChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Starter Projects', 'Advanced Projects'],
+            datasets: [{
+                label: 'Project Distribution',
+                data: [10, 5],
+                backgroundColor: [
+                    'rgba(129, 178, 154, 0.8)',
+                    'rgba(224, 122, 95, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(129, 178, 154, 1)',
+                    'rgba(224, 122, 95, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            if (label) { label += ': '; }
+                            if (context.parsed !== null) { label += context.parsed + ' projects'; }
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Gemini API Integration
+    const apiKey = ""; // Leave as-is for auto-provisioning
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+    const callGemini = async (prompt, loaderElement, resultElement, buttonElement) => {
+        loaderElement.classList.remove('hidden');
+        buttonElement.disabled = true;
+        resultElement.classList.add('hidden');
+
+        let retries = 3;
+        let delay = 1000;
+        
+        while (retries > 0) {
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (text) {
+                    resultElement.innerHTML = text.replace(/\n/g, '<br>'); // Simple formatting
+                    resultElement.classList.remove('hidden');
+                } else {
+                    resultElement.textContent = 'Error: Could not retrieve a valid response from the AI.';
+                    resultElement.classList.remove('hidden');
+                }
+                return;
+
+            } catch (error) {
+                console.error('Gemini API call failed:', error);
+                retries--;
+                if (retries === 0) {
+                    resultElement.textContent = `An error occurred after multiple retries. Please try again later. Details: ${error.message}`;
+                    resultElement.classList.remove('hidden');
+                } else {
+                    await new Promise(res => setTimeout(res, delay));
+                    delay *= 2; // Exponential backoff
+                }
+            } finally {
+                loaderElement.classList.add('hidden');
+                buttonElement.disabled = false;
+            }
+        }
+    };
+
+    // Proposal Drafter
+    function setupModal() {
+        const openProposalModalBtn = document.getElementById('openProposalModalBtn');
+        const proposalModal = document.getElementById('proposalModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const draftProposalBtn = document.getElementById('draftProposalBtn');
+        const proposalLoader = document.getElementById('proposalLoader');
+        const proposalResult = document.getElementById('proposalResult');
+
+        if (openProposalModalBtn) {
+            openProposalModalBtn.addEventListener('click', () => {
+                proposalModal.style.display = 'flex';
+            });
+        }
+
+        if(closeModalBtn) {
+            closeModalBtn.addEventListener('click', () => {
+                proposalModal.style.display = 'none';
+            });
+        }
+
+        window.addEventListener('click', (event) => {
+            if (event.target == proposalModal) {
+                proposalModal.style.display = 'none';
+            }
+        });
+
+        if(draftProposalBtn) {
+            draftProposalBtn.addEventListener('click', () => {
+                const title = document.getElementById('proposalTitle').value.trim();
+                const problem = document.getElementById('proposalProblem').value.trim();
+
+                if (!title || !problem) {
+                    proposalResult.textContent = 'Please provide both a project title and a problem description.';
+                    proposalResult.classList.remove('hidden');
+                    return;
+                }
+                
+                const prompt = `
+                    Act as a student project manager for the Dexter AI Bridge initiative. Your task is to draft a project proposal based on the following information.
+                    Project Title: "${title}"
+                    Problem Description: "${problem}"
+                    
+                    Use the standard proposal outline below. For sections where you need to be creative (like the solution or deliverables), invent plausible details suitable for a high school student team.
+                    
+                    **1. Executive Summary:** A brief, one-paragraph overview.
+                    **2. Problem Statement:** Rephrase the user's description.
+                    **3. Proposed AI Solution:** Describe a specific, achievable AI solution.
+                    **4. Project Scope & Deliverables:** List 3-4 clear deliverables.
+                    **5. Timeline:** A simple 4-week timeline with milestones.
+                    **6. Team Members:** Use placeholder names (e.g., Student Lead, Student Developer).
+                    **7. Success Metrics:** Suggest 1-2 measurable success metrics.
+                `;
+
+                callGemini(prompt, proposalLoader, proposalResult, draftProposalBtn);
+            });
+        }
+    }
+    setupModal();
+
+});
+</script>
+</body>
+</html>
+
